@@ -6,7 +6,7 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import jinja2
 
 import melons
@@ -26,6 +26,7 @@ app.jinja_env.undefined = jinja2.StrictUndefined
 # more useful (you should remove this line in production though)
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 
+# session['cart'] = {}
 
 @app.route("/")
 def index():
@@ -43,14 +44,14 @@ def list_melons():
                            melon_list=melon_list)
 
 
-@app.route("/melon/<melon_id>")
+@app.route("/melon/<melon_id>") #   /melon/cas
 def show_melon(melon_id):
     """Return page showing the details of a given melon.
 
     Show all info about a melon. Also, provide a button to buy that melon.
     """
-
-    melon = melons.get_by_id("meli")
+    melon = melons.get_by_id(melon_id)
+    #melon = melons.get_by_id("cren")
     print(melon)
     return render_template("melon_details.html",
                            display_melon=melon)
@@ -63,9 +64,8 @@ def add_to_cart(melon_id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Melon successfully added to
     cart'."""
-
+    
     # TODO: Finish shopping cart functionality
-
     # The logic here should be something like:
     #
     # - check if a "cart" exists in the session, and create one (an empty
@@ -75,7 +75,31 @@ def add_to_cart(melon_id):
     # - flash a success message
     # - redirect the user to the cart page
 
+    # if 'cart' in session: # 'in' operator is very efficent for dictionaries (looking for the key, which returns its value) and sets. Less efficient for lists and strings. 
+    #     session['cart'] = {}
+
+    session['cart'] = session.get('cart', {})
+
+    session['cart'][melon_id] = session['cart'].get(melon_id, 0) + 1
+
+    # if not session['cart'][melon_id]:
+    #     session['cart'][melon_id] = 0
+    # session['cart'][melon_id] += 1
+
+    # {'cren': 1, "musk": 2, "watermelon": 1}
+    
     return "Oops! This needs to be implemented!"
+
+# @app.route("/login", methods=["POST", "GET"])
+# def login():
+#   # if form is submited
+#     if request.method == "POST":
+#         # record the user name
+#         session["name"] = request.form.get("name")
+#         # redirect to the main page
+#         return redirect("/")
+#     return render_template("login.html")
+
 
 
 @app.route("/cart")
@@ -99,6 +123,10 @@ def show_shopping_cart():
     #
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
+
+    
+
+    total = 0
 
     return render_template("cart.html")
 
