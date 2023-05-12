@@ -13,6 +13,8 @@ import melons
 
 app = Flask(__name__)
 
+app.secret_key = 'RANDOM SECRET KEY'
+
 # A secret key is needed to use Flask sessioning features
 app.secret_key = 'this-should-be-something-unguessable'
 
@@ -81,6 +83,12 @@ def add_to_cart(melon_id):
     session['cart'] = session.get('cart', {})
 
     session['cart'][melon_id] = session['cart'].get(melon_id, 0) + 1
+    # for items in session['cart']:
+    #     if session['cart'][items] > 0:
+    #         show_flash_messages()
+    
+    # show_flash_messages()
+    flash(f"Successfully added a melon")
 
     # if not session['cart'][melon_id]:
     #     session['cart'][melon_id] = 0
@@ -88,7 +96,7 @@ def add_to_cart(melon_id):
 
     # {'cren': 1, "musk": 2, "watermelon": 1}
     
-    return "Oops! This needs to be implemented!"
+    return redirect("/cart")
 
 # @app.route("/login", methods=["POST", "GET"])
 # def login():
@@ -123,12 +131,28 @@ def show_shopping_cart():
     #
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
+    # total_cart = {}
+    # total = 0
+    # for melon_id in session["cart"]:
+        
+    #     total_cart["melon_id"] = quantity
+      
+    # for melon in total_cart:
+    #     print(total_cart[melon] * melon.price)
 
     
 
-    total = 0
+    # total_cart = {}
 
-    return render_template("cart.html")
+    # total = 0
+
+    for Melon, quantity in session["cart"].items():
+        new_price= int(quantity)* int(Melon.price)
+        total = total+new_price
+
+
+    # return render_template("cart.html")
+    # return total
 
 
 @app.route("/login", methods=["GET"])
